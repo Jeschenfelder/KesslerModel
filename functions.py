@@ -2,7 +2,7 @@ import numpy as np
 
 # Functions to solve heat diffusion: 
 
-def solve_heat2D(T,type,kappa, dt=dt,dx=dx,dz=dz,nx=nx,nz=nz):
+def solve_heat2D(T,type,kappa, dt,dx,dz,nx,nz):
     dT_arr = np.zeros_like(T)
     for i in range(1, nx+1):
         for j in range(1,nz+1):
@@ -16,12 +16,12 @@ def solve_heat2D(T,type,kappa, dt=dt,dx=dx,dz=dz,nx=nx,nz=nz):
 
     return dT_arr
 
-def convert_T_to_heat(T,dz=dz,dx=dx,cp=cp_wet,porosity=porosity,rho_solid=rho_fines,rho_water=rho_water):
+def convert_T_to_heat(T,dz,dx,cp,porosity,rho_solid,rho_water):
     mass = porosity*(dz*dx**2)*rho_water + (1-porosity)*(dz*dx**2)*rho_solid #calculate mass of whole cell
     return T*mass*cp
 
 
-# Functions used to move cells:
+# Functions used to move cells during freezing:
 
 def cart_distance(p1,p2):
     '''Calculate the cartesian distance between two points (2D)'''
@@ -41,7 +41,7 @@ def find_closest(x,z,target_val,search_arr):
         distance=None
     return closest_idx, distance
 
-def find_newplace(old_coord,type_arr=type_arr_pad,ds=5,dv=5):
+def find_newplace(old_coord,type_arr,ds=5,dv=5):
     ''' Find new location for a cell when displaced by an ice cell'''
     z,x = old_coord
     closest_atm, d_atm = find_closest(z,x,'a',type_arr)
@@ -61,7 +61,7 @@ def find_newplace(old_coord,type_arr=type_arr_pad,ds=5,dv=5):
 
     return new_z,new_x
 
-def replace_cell(old_coord,new_coord,type_arr,diff_arr,fine_diff = kappa_fines,ice_diff=kappa_ice):
+def replace_cell(old_coord,new_coord,type_arr,diff_arr,fine_diff,ice_diff):
     '''Replace fines cell with ice particle and move fines to new cell and change diffusivity array'''
     #change old cell to ice cell:
     type_arr[old_coord] = 'i'
@@ -73,3 +73,5 @@ def replace_cell(old_coord,new_coord,type_arr,diff_arr,fine_diff = kappa_fines,i
 
     return type_arr,diff_arr
     
+
+# Functions to move cells during thawing:
