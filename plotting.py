@@ -25,7 +25,7 @@ def create_typecmap():
 def plot_typearr(viz_arr,cmap,bounds,title='Soil profile'):
     fig,ax = plt.subplots(1,1, figsize=(6,6))
     plot = ax.imshow(viz_arr,cmap=cmap,vmax=4)
-    fig.suptitle(title)
+    ax.set_title(title)
     cbar = fig.colorbar(plot,ax=ax,ticks=bounds)
     cbar.set_ticklabels(['air','fines','stones','ice'])
     return fig,ax
